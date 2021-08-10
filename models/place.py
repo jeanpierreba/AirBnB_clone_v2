@@ -4,7 +4,6 @@ from os import getenv
 
 from sqlalchemy.sql.schema import Table
 import models
-from models import amenity
 from models.review import Review
 from models.amenity import Amenity
 from models.base_model import BaseModel, Base
@@ -61,3 +60,10 @@ class Place(BaseModel, Base):
                 if amenity_instances.place_id == self.id:
                     place_amenities.append(amenity_instances)
             return place_amenities
+
+        @amenities.setter
+        def amenities(self, amenity_obj):
+            """ handles append method for adding an Amenity.id
+            to the attribute amenity_ids """
+            if isinstance(amenity_obj, Amenity):
+                self.amenities.append(amenity_obj.id)
