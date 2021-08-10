@@ -1,15 +1,13 @@
 #!/usr/bin/python3
 """ State Module for HBNB project """
-from os import name
+from models.place import place_amenity
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.schema import Table
 from models.base_model import Base, BaseModel
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, String
+
 
 class Amenity(BaseModel, Base):
+    """ This class is for amenity attributes """
     __tablename__ = 'amenities'
     name = Column(String(128), nullable=False)
-
-
-    # name = ""
+    place_amenities = relationship('Place', secondary=place_amenity)
