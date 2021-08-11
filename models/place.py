@@ -3,7 +3,6 @@
 from os import getenv
 import models
 from models.review import Review
-from models.amenity import Amenity
 from models.base_model import BaseModel, Base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Table, Integer, String, ForeignKey, Float
@@ -58,6 +57,7 @@ class Place(BaseModel, Base):
         def amenities(self):
             """ returns the list of Amenity instances based on the attribute
             amenity_ids that contains all Amenity.id linked to the Place """
+            from models.amenity import Amenity
             all_amenities = models.storage.all(Amenity)
             place_amenities = []
             for amenity_instances in all_amenities.values():
