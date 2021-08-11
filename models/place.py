@@ -1,20 +1,24 @@
 #!/usr/bin/python3
 """ Place Module for HBNB project """
 from os import getenv
-
-from sqlalchemy.sql.schema import Table
 import models
 from models.review import Review
 from models.amenity import Amenity
 from models.base_model import BaseModel, Base
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Integer, String, ForeignKey, Float
+from sqlalchemy import Column, Table, Integer, String, ForeignKey, Float
 
 place_amenity = Table('place_amenity', Base.metadata,
-                      Column('place_id', String(60), ForeignKey(
-                          'places.id'), primary_key=True, nullable=False),
-                      Column('amenity_id', String(60), ForeignKey(
-                          'amenities.id'), primary_key=True, nullable=False))
+                      Column('place_id',
+                             String(60),
+                             ForeignKey('places.id'),
+                             primary_key=True,
+                             nullable=False),
+                      Column('amenity_id',
+                             String(60),
+                             ForeignKey('amenities.id'),
+                             primary_key=True,
+                             nullable=False))
 
 
 class Place(BaseModel, Base):
@@ -36,7 +40,7 @@ class Place(BaseModel, Base):
         reviews = relationship('Review', backref='place',
                                cascade='all, delete-orphan')
         amenities = relationship(
-            'Amenity', secondary='place_amenity', viewonly=False)
+            'Amenity', secondary=place_amenity, viewonly=False)
 
     else:
         @property
