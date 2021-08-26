@@ -4,7 +4,7 @@
 from fabric.operations import local, put, run
 from fabric.api import env
 from datetime import datetime
-from os import path
+import os
 
 env.hosts = ['35.185.114.184', '34.75.131.28']
 
@@ -21,31 +21,43 @@ def do_pack():
 
 
 def do_deploy(archive_path):
-    """ Distributes an archive to the web servers """
-    if not path.exists(archive_path):
+    """ Distribute archives to the web server """
+    if not os.path.exists(archive_path):
         return False
-
-    path_nx = path.splitext(archive_path)[0]
-    path_nx = path_nx.split('/')[-1]
-    path_yx = path_nx + '.tgz'
-
-    try:
-        put(archive_path, '/tmp/')
-        run('mkdir -p /data/web_static/releases/{:s}/'.format(path_nx))
-        run('tar -xzf /tmp/{:s} -C /data/web_static/releases/{:s}/'
-            .format(path_yx, path_nx))
-        run('rm /tmp/{:s}'.format(path_yx))
-        run('mv /data/web_static/releases/{:s}/web_static/*'
-            ' /data/web_static/releases/{:s}/'
-            .format(path_nx, path_nx))
-        run('rm -rf /data/web_static/releases/{:s}/web_static'.format(path_nx))
-        run('rm -rf /data/web_static/current')
-        run('ln -s /data/web_static/releases/{:s}/ /data/web_static/current'
-            .format(path_nx))
-        print("New version deployed!")
-        return True
-    except:
+    rex = r'^versions/(\S+).tgz'
+    match = re.search(rex, archive_path)
+    filename = match.group(1)
+    res = put(archive_path, "/tmp/{}.tgz".format(filename))
+    if res.failed:
         return False
+    res = run("mkdir -p /data/web_static/releases/{}/".format(filename))
+    if res.failed:
+        return False
+    res = run("tar -xzf /tmp/{}.tgz -C /data/web_static/releases/{}/"
+              .format(filename, filename))
+    if res.failed:
+        return False
+    res = run("rm /tmp/{}.tgz".format(filename))
+    if res.failed:
+        return False
+    res = run("mv /data/web_static/releases/{}"
+              "/web_static/* /data/web_static/releases/{}/"
+              .format(filename, filename))
+    if res.failed:
+        return False
+    res = run("rm -rf /data/web_static/releases/{}/web_static"
+              .format(filename))
+    if res.failed:
+        return False
+    res = run("rm -rf /data/web_static/current")
+    if res.failed:
+        return False
+    res = run("ln -s /data/web_static/releases/{}/ /data/web_static/current"
+              .format(filename))
+    if res.failed:
+        return False
+    print('New version deployed!')
+    return True
 
 
 def deploy():
