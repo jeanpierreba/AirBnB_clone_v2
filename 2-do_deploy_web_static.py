@@ -12,11 +12,11 @@ env.hosts = ['35.185.114.184', '34.75.131.28']
 
 def do_pack():
     """ Function to generate the .tgz file """
-    local("mkdir -p version")
+    local("mkdir -p versions")
     archive = local("tar -cvzf versions/web_static_{}.tgz web_static"
                     .format(datetime.strftime(datetime.now(), "%Y%m%d%H%M%S")),
                     capture=True)
-    if archive.faile:
+    if archive.failed:
         return None
     return archive
 
